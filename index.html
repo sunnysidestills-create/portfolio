@@ -1,0 +1,527 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>DAVID WILLIAM BAUM — Photographer</title>
+<style>
+:root{
+  --bg:#000;
+  --fg:#fff;
+  --blue:#2779a7;
+  --pink:#FF9398;
+  --border:#151515;
+  --muted:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{text-transform:uppercase;letter-spacing:.06em;font-size:12px;line-height:1.4}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-transform:uppercase;letter-spacing:.12em}
+a{color:inherit;text-decoration:none}
+
+/* Header */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  height:64px;padding:0 24px;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid #111;
+}
+.logo{font-weight:600;letter-spacing:.14em;font-size:13px;white-space:nowrap}
+nav{display:flex;gap:28px}
+.nav-btn{
+  position:relative;padding:6px 0;font-size:11px;opacity:.75;
+  transition:opacity .3s,color .3s
+}
+.nav-btn:hover{opacity:1}
+.nav-btn::after{
+  content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;
+  background:var(--pink);transition:width .3s cubic-bezier(.2,.6,0,1)
+}
+.nav-btn:hover::after,.nav-btn.active::after{width:100%}
+.nav-btn.active{color:var(--blue);opacity:1}
+
+/* Grid */
+.grid{
+  padding:88px 24px 120px;max-width:1800px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  counter-reset:project;
+  transition:opacity .4s ease,transform .4s ease;
+}
+.grid.hidden{opacity:0;transform:scale(.985);pointer-events:none;filter:blur(4px)}
+
+.project-card{
+  position:relative;aspect-ratio:4/5;background:#0a0a0a;overflow:hidden;
+  cursor:pointer;border:1px solid var(--border);counter-increment:project;
+  outline:none;
+}
+.project-card:focus-visible{border-color:var(--blue)}
+.project-card img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .8s cubic-bezier(.2,.6,0,1),filter .4s;
+}
+.project-card:hover img,.project-card:focus-visible img{transform:scale(1.035);filter:brightness(.88)}
+.project-info{
+  position:absolute;left:16px;bottom:14px;right:16px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .3s,transform .3s;pointer-events:none;
+}
+.project-card:hover .project-info,.project-card:focus-visible .project-info{opacity:1;transform:translateY(0)}
+.project-title{font-size:11px;letter-spacing:.1em;line-height:1.3}
+.project-meta{font-size:10px;color:#aaa;margin-top:3px}
+.project-count{
+  position:absolute;top:14px;left:14px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px;color:#999;background:rgba(0,0,0,.7);
+  padding:4px 6px;border:1px solid #222;backdrop-filter:blur(6px);letter-spacing:0
+}
+.project-count::before{content:'0' counter(project)}
+
+/* Detail View */
+#detail{
+  position:fixed;inset:0;background:var(--bg);z-index:80;
+  opacity:0;visibility:hidden;transform:translateY(12px);
+  transition:opacity .4s ease,transform .4s ease,visibility .4s;
+}
+#detail.active{opacity:1;visibility:visible;transform:translateY(0)}
+.detail-top{
+  position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;
+  height:64px;padding:0 24px;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid #111;
+}
+.detail-title{display:flex;gap:12px;align-items:center;font-size:12px;letter-spacing:.1em}
+.detail-title .dot{width:4px;height:4px;background:var(--blue);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.close-btn{font-size:11px;opacity:.8;transition:opacity .3s,color .3s}
+.close-btn:hover{opacity:1;color:var(--pink)}
+
+.detail-content{
+  display:grid;grid-template-columns:60% 40%;
+  height:calc(100vh - 64px);max-width:1800px;margin:0 auto
+}
+.detail-left{position:relative;padding:24px;border-right:1px solid #111;overflow:hidden}
+.detail-main-wrap{position:sticky;top:24px;height:calc(100vh - 112px);background:#050505;border:1px solid var(--border)}
+#detailMain{width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .4s}
+.detail-right{height:100%;overflow-y:auto;padding:24px 24px 100px;scrollbar-width:thin}
+.detail-right::-webkit-scrollbar{width:4px}
+.detail-right::-webkit-scrollbar-thumb{background:#222}
+
+.project-head{border-bottom:1px solid var(--border);padding-bottom:22px;margin-bottom:24px}
+.project-head h2{
+  font-size:20px;font-weight:500;letter-spacing:.06em;margin-bottom:14px;
+  text-transform:none;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif
+}
+.project-specs{display:grid;grid-template-columns:80px 1fr;gap:8px 16px;font-size:10px;color:#777}
+.project-specs span:last-child{color:#ddd;letter-spacing:.08em}
+.project-desc{
+  margin-top:18px;font-size:13px;line-height:1.65;color:#bbb;
+  text-transform:none;letter-spacing:.01em;font-weight:300;max-width:54ch
+}
+
+.sub-images{display:flex;flex-direction:column;gap:16px}
+.sub-image{
+  width:100%;background:#0a0a0a;border:1px solid var(--border);overflow:hidden;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .6s cubic-bezier(.2,.6,0,1),transform .6s cubic-bezier(.2,.6,0,1)
+}
+.sub-image.in{opacity:1;transform:translateY(0)}
+.sub-image img{width:100%;height:auto;display:block}
+.sub-caption{
+  padding:10px 12px;font-size:10px;color:#666;display:flex;justify-content:space-between;
+  border-top:1px solid var(--border);font-family:ui-monospace,monospace;letter-spacing:0
+}
+
+/* Overlays */
+.overlay{
+  position:fixed;inset:0;background:var(--bg);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:40px;
+  opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s
+}
+.overlay.active{opacity:1;visibility:visible}
+.overlay-inner{
+  max-width:720px;width:100%;border:1px solid #222;padding:56px 48px;background:#050505;
+  position:relative;transform:translateY(10px);transition:transform .4s
+}
+.overlay.active .overlay-inner{transform:translateY(0)}
+.overlay h3{font-size:12px;margin-bottom:24px;color:var(--blue);letter-spacing:.14em}
+.overlay p{
+  font-size:15px;line-height:1.7;color:#d0d0d0;text-transform:none;letter-spacing:.01em;
+  font-weight:300;margin-bottom:16px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif
+}
+.overlay p strong{color:#fff;font-weight:500}
+.close-x{position:absolute;top:20px;right:20px;font-size:11px;opacity:.7;transition:opacity .3s,color .3s}
+.close-x:hover{opacity:1;color:var(--pink)}
+
+.index-list{display:flex;flex-direction:column;border:1px solid var(--border);background:var(--border);gap:1px;max-height:60vh;overflow:auto}
+.index-item{
+  display:grid;grid-template-columns:48px 1fr auto;gap:16px;align-items:center;
+  padding:16px 20px;background:#000;cursor:pointer;transition:background .2s,color .2s
+}
+.index-item:hover{background:#0a0a0a;color:#fff}
+.index-item span:first-child{font-family:ui-monospace,monospace;color:#555;font-size:11px;letter-spacing:0}
+.index-item span:nth-child(2){font-size:12px;letter-spacing:.08em}
+.index-item span:last-child{font-size:10px;color:#666;letter-spacing:.06em}
+
+/* Footer */
+footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:60;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 24px;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);
+  border-top:1px solid #111;font-size:10px;color:#777;letter-spacing:.08em
+}
+footer a{color:#aaa;transition:color .3s}
+footer a:hover{color:var(--pink)}
+
+/* Mobile */
+@media(max-width:900px){
+  .detail-content{grid-template-columns:1fr;height:auto}
+  .detail-left{border-right:0;border-bottom:1px solid #111;padding:16px}
+  .detail-main-wrap{position:relative;top:0;height:65vh}
+  .detail-right{overflow:visible;padding:24px 16px 80px;height:auto}
+}
+@media(max-width:768px){
+  header{height:56px;padding:0 16px}
+  nav{gap:20px}
+  .grid{grid-template-columns:1fr;gap:16px;padding:72px 16px 100px}
+  .project-info{opacity:1;transform:none;background:linear-gradient(transparent,rgba(0,0,0,.7));left:0;bottom:0;right:0;padding:24px 14px 12px}
+  .detail-top{padding:0 16px;height:56px}
+  footer{padding:12px 16px;flex-direction:column;gap:4px;align-items:flex-start}
+  .overlay{padding:20px;align-items:flex-end}
+  .overlay-inner{padding:36px 24px}
+  .project-head h2{font-size:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">DAVID WILLIAM BAUM</div>
+  <nav>
+    <button class="nav-btn" id="infoBtn" aria-label="Open info">INFO</button>
+    <button class="nav-btn" id="indexBtn" aria-label="Open index">INDEX</button>
+  </nav>
+</header>
+
+<main id="grid" class="grid" aria-label="Projects"></main>
+
+<aside id="detail" aria-hidden="true">
+  <div class="detail-top">
+    <div class="detail-title">
+      <span class="dot"></span>
+      <span id="detailTitle">PROJECT</span>
+    </div>
+    <button class="close-btn" id="closeDetail" aria-label="Close project">CLOSE [ESC]</button>
+  </div>
+  <div class="detail-content">
+    <div class="detail-left">
+      <div class="detail-main-wrap">
+        <img id="detailMain" alt="">
+      </div>
+    </div>
+    <div class="detail-right">
+      <div class="project-head">
+        <h2 id="projectTitle"></h2>
+        <div class="project-specs">
+          <span>CLIENT</span><span id="specClient"></span>
+          <span>YEAR</span><span id="specYear"></span>
+          <span>ROLE</span><span>Photography & Direction</span>
+        </div>
+        <p class="project-desc" id="projectDesc"></p>
+      </div>
+      <div class="sub-images" id="subImages"></div>
+    </div>
+  </div>
+</aside>
+
+<div class="overlay" id="infoOverlay" aria-hidden="true">
+  <div class="overlay-inner">
+    <button class="close-x" data-close="info">CLOSE</button>
+    <h3>INFO</h3>
+    <p><strong>Photographer based in Los Angeles,</strong> creating imagery rooted in emotional clarity and refined aesthetics.</p>
+    <p>Work explores the tension between minimalism and human presence — fashion, still life, and portraiture with a brutalist sensibility. Available for commission worldwide.</p>
+    <p style="margin-top:32px;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#777">Studio — Los Angeles, CA<br>Represented by — Unititled Artists</p>
+  </div>
+</div>
+
+<div class="overlay" id="indexOverlay" aria-hidden="true">
+  <div class="overlay-inner">
+    <button class="close-x" data-close="index">CLOSE</button>
+    <h3>INDEX — SELECTED WORKS</h3>
+    <div class="index-list" id="indexList"></div>
+  </div>
+</div>
+
+<footer>
+  <span>© 2025 DAVID WILLIAM BAUM</span>
+  <span>Available for hire worldwide. <a href="mailto:info@davidwilliambaum.com">info@davidwilliambaum.com</a></span>
+</footer>
+
+<script>
+const projects = [
+  {
+    id: 'elder',
+    title: 'ELDER STATESMAN',
+    client: 'Holiday \'24',
+    year: '2024',
+    mainImage: 'assets/images/1-main.jpg',
+    subImages: [
+      'assets/images/1-sub1.jpg',
+      'assets/images/1-sub2.jpg',
+      'assets/images/1-sub3.jpg',
+      'assets/images/1-sub4.jpg'
+    ],
+    description: 'Cashmere campaign exploring warmth and tactility through natural light. Shot on location in Big Sur, emphasizing texture and muted winter palettes.'
+  },
+  {
+    id: 'costa',
+    title: 'COSTA BRAZIL',
+    client: 'Kaya Collection',
+    year: '2024',
+    mainImage: 'assets/images/2-main.jpg',
+    subImages: [
+      'assets/images/2-sub1.jpg',
+      'assets/images/2-sub2.jpg',
+      'assets/images/2-sub3.jpg',
+      'assets/images/2-sub4.jpg',
+      'assets/images/2-sub4.jpg'
+    ],
+    description: 'Botanical still life series for skincare launch. Minimal compositions against black void, highlighting organic form and ritual.'
+  },
+  {
+    id: 'rhode',
+    title: 'RHODE',
+    client: 'Peptide Glazing',
+    year: '2023',
+    mainImage: 'assets/images/3-main.jpg',
+    subImages: [
+      'assets/images/3-sub1.jpg',
+      'assets/images/3-sub2.jpg',
+      'assets/images/3-sub3.jpg',
+      'assets/images/3-sub4.jpg'
+    ],
+    description: 'Beauty editorial centered on skin as surface. High-gloss macro studies paired with restrained portraiture.'
+  },
+  {
+    id: 'sophie',
+    title: 'SOPHIE BUHAI',
+    client: 'Sculpture Series',
+    year: '2023',
+    mainImage: 'assets/images/4-main.jpg',
+    subImages: [
+      'assets/images/4-sub1.jpg',
+      'assets/images/4-sub2.jpg',
+      'assets/images/4-sub3.jpg',
+      'assets/images/4-sub4.jpg'
+    ],
+    description: 'Jewelry as object and architecture. Hard shadows, brutalist plinths, and a muted palette to let form speak.'
+  },
+  {
+    id: 'nike',
+    title: 'NIKE',
+    client: 'ACG \'23',
+    year: '2023',
+    mainImage: 'assets/images/5-main.jpg',
+    subImages: [
+      'assets/images/5-sub1.jpg',
+      'assets/images/5-sub2.jpg',
+      'assets/images/5-sub3.jpg',
+      'assets/images/5-sub4.jpg',
+      'assets/images/5-sub4.jpg'
+    ],
+    description: 'All-conditions gear shot in studio and Mojave. Movement studies contrasting technical fabric with natural erosion.'
+  },
+  {
+    id: 'frame',
+    title: 'FRAME',
+    client: 'Denim',
+    year: '2022',
+    mainImage: 'assets/images/6-main.jpg',
+    subImages: [
+      'assets/images/6-sub1.jpg',
+      'assets/images/6-sub2.jpg',
+      'assets/images/6-sub3.jpg',
+      'assets/images/6-sub4.jpg'
+    ],
+    description: 'American denim, reduced to shape and indigo. A catalogue of archetypes photographed against seamless black.'
+  }
+];
+
+const grid = document.getElementById('grid');
+const detail = document.getElementById('detail');
+const detailMain = document.getElementById('detailMain');
+const subImages = document.getElementById('subImages');
+let currentIndex = 0;
+
+function renderGrid(){
+  grid.innerHTML = projects.map((p,i)=>`
+    <article class="project-card" data-id="${p.id}" tabindex="0" role="button" aria-label="Open ${p.title}">
+      <span class="project-count"></span>
+      <img src="${p.mainImage}" alt="${p.title} — ${p.client}" loading="lazy">
+      <div class="project-info">
+        <div>
+          <div class="project-title">${p.title}</div>
+          <div class="project-meta">${p.client} — ${p.year}</div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+  
+  document.querySelectorAll('.project-card').forEach(card=>{
+    card.addEventListener('click',()=>openProject(card.dataset.id));
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openProject(card.dataset.id)}});
+  });
+}
+renderGrid();
+
+function fillDetail(project){
+  document.getElementById('detailTitle').textContent = project.title;
+  document.getElementById('projectTitle').textContent = project.title;
+  document.getElementById('specClient').textContent = project.client;
+  document.getElementById('specYear').textContent = project.year;
+  document.getElementById('projectDesc').textContent = project.description;
+  
+  detailMain.style.opacity = '0';
+  detailMain.src = project.mainImage;
+  detailMain.alt = project.title;
+  setTimeout(()=>detailMain.style.opacity='1',50);
+  
+  subImages.innerHTML = '';
+  project.subImages.forEach((src,i)=>{
+    const div = document.createElement('div');
+    div.className = 'sub-image';
+    div.innerHTML = `
+      <img src="${src}" alt="${project.title} detail ${i+1}" loading="lazy">
+      <div class="sub-caption"><span>${String(i+1).padStart(2,'0')}</span><span>${project.client}</span></div>
+    `;
+    subImages.appendChild(div);
+    setTimeout(()=>div.classList.add('in'), 120 + i*90);
+  });
+  document.querySelector('.detail-right').scrollTop = 0;
+}
+
+function openProject(id){
+  const project = projects.find(p=>p.id===id);
+  currentIndex = projects.indexOf(project);
+  
+  const card = document.querySelector(`[data-id="${id}"]`);
+  const img = card.querySelector('img');
+  const rect = img.getBoundingClientRect();
+  
+  // Clone for transition
+  const clone = img.cloneNode();
+  Object.assign(clone.style,{
+    position:'fixed',left:rect.left+'px',top:rect.top+'px',
+    width:rect.width+'px',height:rect.height+'px',objectFit:'cover',
+    zIndex:'150',transition:'all 650ms cubic-bezier(.76,0,.24,1)',pointerEvents:'none'
+  });
+  document.body.appendChild(clone);
+  
+  fillDetail(project);
+  grid.classList.add('hidden');
+  detail.classList.add('active');
+  detail.setAttribute('aria-hidden','false');
+  
+  requestAnimationFrame(()=>{
+    const target = document.querySelector('.detail-main-wrap');
+    const tRect = target.getBoundingClientRect();
+    const size = Math.min(tRect.width, tRect.height);
+    const left = tRect.left + (tRect.width - size)/2;
+    const top = tRect.top + (tRect.height - size)/2;
+    clone.style.left = left + 'px';
+    clone.style.top = top + 'px';
+    clone.style.width = size + 'px';
+    clone.style.height = size + 'px';
+    clone.style.opacity = '0.4';
+  });
+  
+  setTimeout(()=>clone.remove(),680);
+  history.pushState({project:id},'',`#${id}`);
+}
+
+function closeDetail(){
+  detail.classList.remove('active');
+  grid.classList.remove('hidden');
+  detail.setAttribute('aria-hidden','true');
+  detailMain.style.opacity = '0';
+  if(location.hash) history.pushState({},'',location.pathname);
+}
+
+document.getElementById('closeDetail').addEventListener('click',closeDetail);
+
+// Info
+const infoBtn = document.getElementById('infoBtn');
+const infoOverlay = document.getElementById('infoOverlay');
+infoBtn.addEventListener('click',()=>{
+  infoOverlay.classList.toggle('active');
+  infoBtn.classList.toggle('active');
+  indexOverlay.classList.remove('active');
+  document.getElementById('indexBtn').classList.remove('active');
+});
+
+// Index
+const indexBtn = document.getElementById('indexBtn');
+const indexOverlay = document.getElementById('indexOverlay');
+const indexList = document.getElementById('indexList');
+
+function renderIndex(){
+  indexList.innerHTML = projects.map((p,i)=>`
+    <div class="index-item" data-id="${p.id}" tabindex="0" role="button">
+      <span>${String(i+1).padStart(2,'0')}</span>
+      <span>${p.title}</span>
+      <span>${p.year}</span>
+    </div>
+  `).join('');
+  indexList.querySelectorAll('.index-item').forEach(item=>{
+    item.addEventListener('click',()=>{indexOverlay.classList.remove('active');indexBtn.classList.remove('active');openProject(item.dataset.id)});
+  });
+}
+renderIndex();
+
+indexBtn.addEventListener('click',()=>{
+  indexOverlay.classList.toggle('active');
+  indexBtn.classList.toggle('active');
+  infoOverlay.classList.remove('active');
+  infoBtn.classList.remove('active');
+});
+
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.getElementById(btn.dataset.close+'Overlay').classList.remove('active');
+    document.getElementById(btn.dataset.close+'Btn').classList.remove('active');
+  });
+});
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(detail.classList.contains('active')) closeDetail();
+    if(infoOverlay.classList.contains('active')){infoOverlay.classList.remove('active');infoBtn.classList.remove('active')}
+    if(indexOverlay.classList.contains('active')){indexOverlay.classList.remove('active');indexBtn.classList.remove('active')}
+  }
+  if(detail.classList.contains('active')){
+    if(e.key==='ArrowRight') navigate(1);
+    if(e.key==='ArrowLeft') navigate(-1);
+  }
+});
+
+function navigate(dir){
+  currentIndex = (currentIndex + dir + projects.length) % projects.length;
+  fillDetail(projects[currentIndex]);
+}
+
+// Open from hash
+window.addEventListener('load',()=>{
+  if(location.hash){
+    const id = location.hash.slice(1);
+    if(projects.find(p=>p.id===id)) setTimeout(()=>openProject(id),100);
+  }
+});
+
+// Close overlays on backdrop click
+[infoOverlay,indexOverlay].forEach(ov=>{
+  ov.addEventListener('click',e=>{if(e.target===ov){ov.classList.remove('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'))}});
+});
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>
